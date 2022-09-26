@@ -1,4 +1,4 @@
-const mainData = () => {
+const categoriesData = () => {
   const preloader = document.querySelector('.preloder');
   const renderGenreList = (genres) => {
     const dropdownBlock = document.querySelector('.header__menu .dropdown');
@@ -14,13 +14,13 @@ const mainData = () => {
   };
 
   const renderAnimeList = (array, genres) => {
-    const wrapper = document.querySelector('.product  .col-lg-8');
+    const wrapper = document.querySelector('.product-page  .col-lg-8');
     wrapper.innerHTML = '';
 
     genres.forEach((genre) => {
       const productBlock = document.createElement('div');
       const listBlock = document.createElement('div');
-      const list = array.filter((item) => item.genre === genre);
+      const list = array.filter((item) => item.tags.includes(genre));
       listBlock.classList.add('row');
       productBlock.classList.add('mb-5');
 
@@ -115,15 +115,22 @@ const mainData = () => {
     })
     .then((data) => {
       const genres = new Set();
-
+      const genreParams = new URLSearchParams(window.location.search).get(
+        'genre'
+      );
       data.anime.forEach((item) => {
         genres.add(item.genre);
       });
 
       renderTopAnime(data.anime.sort((a, b) => b.views - a.views).slice(0, 5));
-      renderAnimeList(data.anime, genres);
+      if (genreParams) {
+        renderAnimeList(data.anime, [genreParams]);
+      } else {
+        renderAnimeList(data.anime, genres);
+      }
+
       renderGenreList(genres);
     });
 };
 
-mainData();
+categoriesData();
